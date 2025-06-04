@@ -1,0 +1,25 @@
+server:
+    port: 9010
+    maxHttpHeaderSize: 10240
+    servlet:
+        context-path: /wcProgram-request
+spring:
+    datasource:
+        driverClassName: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://localhost/sys?serverTimezone=Asia/Shanghai&allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false
+        username: root
+        password: p@ssw0rd
+    application:
+        name: wChartProgram
+    profiles:
+        active: ${package.environment}
+    servlet:
+        multipart:
+            maxFileSize: 512MB
+            maxRequestSize: 300MB
+    mvc:
+        async:
+            request-timeout: 60000
+
+
+

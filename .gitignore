@@ -1,0 +1,29 @@
+# Default ignored files
+/shelf/
+/.idea/workspace.xml
+/compiler.xml
+/jarRepositories.xml
+/misc.xml
+/vcs.xml
+/encodings.xml
+/uiDesigner.xml
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml
+# Editor-based HTTP Client requests
+/httpRequests/
+
+# ---> Java
+*.class
+# Package Files #
+*.iml
+*.jar
+*.war
+*.ear
+**/target/
+**/test/
+
+# idea配置，日志，打包结果不进行管理
+.idea
+*.log.gz
+
