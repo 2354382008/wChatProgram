@@ -5,6 +5,7 @@ import com.wChartProgram.model.dto.WChartProgramDto;
 import com.wChartProgram.model.entity.LeaderRole;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,10 +26,8 @@ public class ProgramController {
         return leaderRoleService.queryLeaderList();
     }
     @PostMapping("/query")
-    public String query(@RequestBody WChartProgramDto wChartProgramDto){
-        System.out.println("返回值类型为字符串的拦截");
-        return "";
-//        return leaderRoleService.queryLeaderList();
+    public List<LeaderRole> query(@RequestBody WChartProgramDto wChartProgramDto){
+        return leaderRoleService.queryLeaderList();
     }
 
 }

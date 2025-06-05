@@ -9,6 +9,10 @@ spring:
         url: jdbc:mysql://localhost/sys?serverTimezone=Asia/Shanghai&allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false
         username: root
         password: p@ssw0rd
+    redis:
+        host: localhost
+        port: 6379
+        #  password: yourpassword  # 本地redis暂无密码
     application:
         name: wChartProgram
     profiles:

@@ -1,4 +1,4 @@
-package com.wChartProgram.buss;
+package com.wChartProgram.buss.aop;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Aspect
 @Component
-public class MyAspect {
+public class AopAspect {
     /**
      * execution(modifier? ret-type declaring-type?name-pattern(param-pattern) throws-pattern?)
      * modifier：匹配修饰符，public, private 等，省略时匹配任意修饰符
@@ -48,10 +48,11 @@ public class MyAspect {
         HttpServletRequest request = (HttpServletRequest) requestAttributes
                 .resolveReference(RequestAttributes.REFERENCE_REQUEST);
         String url = request.getRequestURL().toString();
-        if (url.contains("query")){
-            System.out.println("AOP拦截-query该路径不允许访问！");
-            return null;
-        }
+        //测试环境暂不拦截
+//        if (url.contains("query")){
+//            System.out.println("AOP拦截-query该路径不允许访问！");
+//            return null;
+//        }
         System.out.println("AOP-开始访问");
         Object proceed = proceedingJoinPoint.proceed();
         System.out.println("AOP-访问结束");
@@ -71,10 +72,11 @@ public class MyAspect {
         HttpServletRequest request = (HttpServletRequest) requestAttributes
                 .resolveReference(RequestAttributes.REFERENCE_REQUEST);
         String url = request.getRequestURL().toString();
-        if (url.contains("add")){
-            System.out.println("AOP拦截-add该路径不允许访问！");
-            return null;
-        }
+        //测试环境暂不拦截
+//        if (url.contains("add")){
+//            System.out.println("AOP拦截-add该路径不允许访问！");
+//            return null;
+//        }
         System.out.println("AOP-开始访问");
         Object proceed = proceedingJoinPoint.proceed();
         System.out.println("AOP-访问结束");

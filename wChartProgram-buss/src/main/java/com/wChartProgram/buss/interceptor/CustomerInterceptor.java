@@ -19,10 +19,11 @@ public class CustomerInterceptor implements HandlerInterceptor {
         System.out.println("Pre-handle method");
         String url = request.getRequestURL().toString();
         log.info("请求的url: {}", url);
-        if (url.contains("query")) {
-            log.info("拦截器拦截-该路径不允许访问!");
-            return false;
-        }
+        //测试环境暂不拦截
+//        if (url.contains("query")) {
+//            log.info("拦截器拦截-该路径不允许访问!");
+//            return false;
+//        }
         return HandlerInterceptor.super.preHandle(request, response, handler);
     }
 
