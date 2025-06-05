@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wChartProgram.buss.mapper.StaffRoleMapper">
+
+    <resultMap id="BaseResultMap" type="com.wChartProgram.model.entity.StaffRole">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="staffUuid" column="staff_uuid" jdbcType="VARCHAR"/>
+            <result property="staffName" column="staff_name" jdbcType="VARCHAR"/>
+            <result property="department" column="department" jdbcType="VARCHAR"/>
+            <result property="leaderUuid" column="leader_uuid" jdbcType="VARCHAR"/>
+            <result property="createDt" column="create_dt" jdbcType="TIMESTAMP"/>
+            <result property="updateDt" column="update_dt" jdbcType="TIMESTAMP"/>
+            <result property="status" column="status" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,staff_uuid,staff_name,
+        department,leader_uuid,create_dt,
+        update_dt,status
+    </sql>
+</mapper>

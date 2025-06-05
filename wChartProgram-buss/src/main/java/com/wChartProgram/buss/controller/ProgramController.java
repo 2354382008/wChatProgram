@@ -24,4 +24,11 @@ public class ProgramController {
     public List<LeaderRole> addinfo(@RequestBody WChartProgramDto wChartProgramDto){
         return leaderRoleService.queryLeaderList();
     }
+    @PostMapping("/query")
+    public String query(@RequestBody WChartProgramDto wChartProgramDto){
+        System.out.println("返回值类型为字符串的拦截");
+        return "";
+//        return leaderRoleService.queryLeaderList();
+    }
+
 }

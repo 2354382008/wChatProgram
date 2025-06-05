@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wChartProgram.buss.mapper.WorkAffairsConfigMapper">
+
+    <resultMap id="BaseResultMap" type="com.wChartProgram.model.entity.WorkAffairsConfig">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="affairs" column="affairs" jdbcType="VARCHAR"/>
+            <result property="founder" column="founder" jdbcType="VARCHAR"/>
+            <result property="executor" column="executor" jdbcType="VARCHAR"/>
+            <result property="createDt" column="create_dt" jdbcType="TIMESTAMP"/>
+            <result property="executDt" column="execut_dt" jdbcType="TIMESTAMP"/>
+            <result property="isNotice" column="is_notice" jdbcType="VARCHAR"/>
+            <result property="executSts" column="execut_sts" jdbcType="VARCHAR"/>
+            <result property="remark" column="remark" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,affairs,founder,
+        executor,create_dt,execut_dt,
+        is_notice,execut_sts,remark
+    </sql>
+</mapper>

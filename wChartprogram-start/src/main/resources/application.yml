@@ -21,5 +21,10 @@ spring:
         async:
             request-timeout: 60000
 
+logging:
+    level:
+        root: INFO
+        org.springframework: DEBUG
+
 
 
