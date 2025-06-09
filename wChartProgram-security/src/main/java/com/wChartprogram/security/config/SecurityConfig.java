@@ -15,6 +15,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
  * 配置安全策略（主要做权限，是一个认证和授权的框架）
  */
 @Configuration
+//启动security
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
