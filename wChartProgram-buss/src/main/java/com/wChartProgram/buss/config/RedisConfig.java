@@ -16,10 +16,16 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 /**
  * redis装载配置
+ * @Configuration 代表告诉spring这个是以一个配置类
  */
 @Configuration
 public class RedisConfig {
 
+    /**
+     * @Bean 代表给容器注册一个bean
+     * @param connectionFactory
+     * @return
+     */
     @Bean
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();

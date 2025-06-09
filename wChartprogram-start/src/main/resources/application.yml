@@ -30,5 +30,24 @@ logging:
         root: INFO
         org.springframework: DEBUG
 
+## 白名单配置，springboot启动时会忽略，不进行身份认证和授权校验
+secure:
+    ignored:
+        urls:
+            - /swagger-ui.html
+            - /swagger-ui/**
+            - /swagger-resources/**
+            - /swagger/**
+            - /v3/**
+            - /**/*.js
+            - /**/*.css
+            - /**/*.png
+            - /**/*.ico
+            - /webjars/**
+            - /actuator/**
+            - /druid/**
+            - /&zwnj;**/common/**&zwnj;
+            - /common/**
+
 
 
