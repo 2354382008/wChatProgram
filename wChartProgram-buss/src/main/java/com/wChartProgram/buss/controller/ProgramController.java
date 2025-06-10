@@ -30,4 +30,10 @@ public class ProgramController {
         return leaderRoleService.queryLeaderList();
     }
 
+    @PostMapping
+    public void notice(){
+        //测试状态机
+        leaderRoleService.notice();
+    }
+
 }

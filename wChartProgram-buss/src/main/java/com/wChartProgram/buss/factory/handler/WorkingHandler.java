@@ -1,6 +1,6 @@
 package com.wChartProgram.buss.factory.handler;
 
-import com.wChartProgram.common.enumCode.HandlerCode;
+import com.wChartProgram.common.enums.HandlerCode;
 
 public interface WorkingHandler{
 

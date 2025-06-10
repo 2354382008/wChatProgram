@@ -1,4 +1,4 @@
-package com.wChartProgram.common.enumCode;
+package com.wChartProgram.common.enums;
 
 /**
  * 自定义返回结果码值

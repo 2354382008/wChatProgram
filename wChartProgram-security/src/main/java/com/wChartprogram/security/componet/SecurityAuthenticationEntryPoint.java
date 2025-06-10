@@ -1,6 +1,6 @@
 package com.wChartProgram.security.componet;
 
-import com.wChartProgram.common.enumCode.ResultCode;
+import com.wChartProgram.common.enums.ResultCode;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Service;

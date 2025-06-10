@@ -1,7 +1,7 @@
 package com.wChartProgram.buss.factory;
 
 import com.wChartProgram.buss.factory.handler.WorkingHandler;
-import com.wChartProgram.common.enumCode.HandlerCode;
+import com.wChartProgram.common.enums.HandlerCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
