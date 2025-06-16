@@ -1,4 +1,4 @@
-package com.wChartProgram.security.componet;
+package com.wChartprogram.security.componet;
 
 import com.wChartProgram.common.enums.ResultCode;
 import org.springframework.security.access.AccessDeniedException;
@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@Service
+@Service("securityAccessDeniedHandlerOne")
 public class SecurityAccessDeniedHandler implements AccessDeniedHandler {
 
     @Override

@@ -1,4 +1,4 @@
-package com.wChartProgram.security.config;
+package com.wChartprogram.security.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

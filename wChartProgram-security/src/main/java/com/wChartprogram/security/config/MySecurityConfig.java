@@ -1,7 +1,7 @@
-package com.wChartProgram.security.config;
+package com.wChartprogram.security.config;
 
-import com.wChartProgram.security.componet.SecurityAccessDeniedHandler;
-import com.wChartProgram.security.componet.SecurityAuthenticationEntryPoint;
+import com.wChartprogram.security.componet.SecurityAccessDeniedHandler;
+import com.wChartprogram.security.componet.SecurityAuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -17,7 +17,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 @Configuration
 //启动security
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class MySecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * 权限配置，白名单，jwt认证
@@ -57,7 +57,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      * 白名单配置
      * @return
      */
-    @Bean
+    @Bean("ignoreUrlsConfigOne")
     protected IgnoreUrlsConfig ignoreUrlsConfig(){
         return new IgnoreUrlsConfig();
     }

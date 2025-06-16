@@ -13,6 +13,8 @@ spring:
         host: localhost
         port: 6379
         #  password: yourpassword  # 本地redis暂无密码
+#    main:
+#        allow-bean-definition-overriding: true
     application:
         name: wChartProgram
     profiles:
@@ -24,6 +26,8 @@ spring:
     mvc:
         async:
             request-timeout: 60000
+mybatis-plus:
+    mapper-locations: classpath:mapper/*.xml
 
 logging:
     level:

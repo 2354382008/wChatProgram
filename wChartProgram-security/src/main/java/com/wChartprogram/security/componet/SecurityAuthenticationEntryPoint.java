@@ -1,4 +1,4 @@
-package com.wChartProgram.security.componet;
+package com.wChartprogram.security.componet;
 
 import com.wChartProgram.common.enums.ResultCode;
 import org.springframework.security.core.AuthenticationException;
@@ -13,7 +13,7 @@ import java.io.IOException;
 /**
  * 没有登录时的处理类
  */
-@Service
+@Service("securityAuthenticationEntryPointOne")
 public class SecurityAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
