@@ -13,4 +13,6 @@ public interface LeaderRoleService extends IService<LeaderRole> {
     List<LeaderRole> queryLeaderList();
 
     void notice();
+
+    void updateSts();
 }

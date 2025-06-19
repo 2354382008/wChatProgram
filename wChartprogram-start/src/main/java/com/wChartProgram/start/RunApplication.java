@@ -18,7 +18,14 @@ import org.springframework.web.servlet.mvc.Controller;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-
+/**
+ * 生命周期：
+ * 实例化(spring容器通过反射或构造器创建bean实例，单例bean在容器启动时创建，原型bean在每次请求时创建)
+ * 属性赋值（通过依赖注入（构造器注入，setter注入或字段）设置属性）
+ * 初始化（@postconstruct注解方法或InitalizingBean.afterPropertiessec()）
+ * 使用（bean完全初始化后，可被应用程序调用）
+ * 销毁（容器关闭时调用）
+ */
 @Slf4j
 @SpringBootApplication(scanBasePackages = {"com.wChartProgram.**"})
 @MapperScans(@MapperScan({"com.wChartProgram.**.mapper*"}))

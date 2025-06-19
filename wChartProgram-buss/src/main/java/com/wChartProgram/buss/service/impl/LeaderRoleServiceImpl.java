@@ -29,9 +29,21 @@ implements LeaderRoleService {
     @Autowired
     private LeaderRoleMapper leaderRoleMapper;
 
+    /**
+     * 是spring定义的注解
+     * 是先根据类型（byType）查找，如果存在多个 Bean 再根据名称（byName）进行查找
+     * 只有一个required参数可设置
+     * 支持属性，构造方法，setter注入
+     */
     @Autowired
     private RedisComponet redisComponet;
 
+    /**
+     * java定义的注解
+     * 是先根据名称查找，如果（根据名称）查找不到，再根据类型进行查找
+     * 有name和type参数可设置
+     * 支持属性注入
+     */
     @Resource
     private StateMachine<StatusCode,HandlerCode> stateMachine;
 
@@ -50,6 +62,15 @@ implements LeaderRoleService {
         Message message = MessageBuilder.withPayload(HandlerCode.NOTICE).
                 setHeader("order", "1").build();
         sendEvent(message);
+
+    }
+
+    /**
+     * 使用多线程更新状态
+     * 按每1000条分一批次执行
+     */
+    @Override
+    public void updateSts() {
 
     }
 
