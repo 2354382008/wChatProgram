@@ -13,7 +13,21 @@ spring:
         host: localhost
         port: 6379
         #  password: yourpassword  # 本地redis暂无密码
-#    main:
+    kafka:
+        bootstrap-servers: localhost:9091  # Kafka 服务器地址
+        template:
+            default-topic: demo              # 默认主题
+        producer:
+            key-serializer: org.apache.kafka.common.serialization.StringSerializer  # 键的序列化器
+            value-serializer: org.apache.kafka.common.serialization.StringSerializer  # 值的序列化器
+            acks: -1  # 确认机制，-1 表示所有副本都确认后才返回
+            retries: 3  # 发送失败后的重试次数
+        consumer:
+            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer  # 键的反序列化器
+            value-deserializer: org.apache.kafka.common.serialization.StringDeserializer  # 值的反序列化器
+            group-id: test-consumer-group  # 消费者组
+            auto-offset-reset: latest  # 偏移量重置策略，latest 表示从最新的消息开始消费
+    #    main:
 #        allow-bean-definition-overriding: true
     application:
         name: wChartProgram
@@ -51,7 +65,6 @@ secure:
             - /actuator/**
             - /druid/**
             - /&zwnj;**/common/**&zwnj;
-            - /common/**
 
 
 

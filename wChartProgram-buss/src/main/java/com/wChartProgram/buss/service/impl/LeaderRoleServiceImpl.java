@@ -9,6 +9,7 @@ import com.wChartProgram.common.enums.HandlerCode;
 import com.wChartProgram.common.enums.StatusCode;
 import com.wChartProgram.model.entity.LeaderRole;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
@@ -16,6 +17,11 @@ import org.springframework.statemachine.StateMachine;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 /**

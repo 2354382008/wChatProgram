@@ -1,11 +1,11 @@
 package com.wChartProgram.buss.controller;
 
+import com.wChartProgram.buss.service.KafkaService;
 import com.wChartProgram.buss.service.LeaderRoleService;
 import com.wChartProgram.model.dto.WChartProgramDto;
 import com.wChartProgram.model.entity.LeaderRole;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +21,9 @@ public class ProgramController {
     @Autowired
     private LeaderRoleService leaderRoleService;
 
+    @Autowired
+    private KafkaService KafkaService;
+
     @PostMapping("/add")
     public List<LeaderRole> addinfo(@RequestBody WChartProgramDto wChartProgramDto){
         return leaderRoleService.queryLeaderList();
@@ -30,10 +33,14 @@ public class ProgramController {
         return leaderRoleService.queryLeaderList();
     }
 
-    @PostMapping
+    @PostMapping("/test")
     public void notice(){
+        log.info("kafkakafkakafka");
         //测试状态机
-        leaderRoleService.notice();
+        //leaderRoleService.notice();
+        //测试kafka
+        KafkaService.sendMessage(null,null);
     }
+
 
 }
