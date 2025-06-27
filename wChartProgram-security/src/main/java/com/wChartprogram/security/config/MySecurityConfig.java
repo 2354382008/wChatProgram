@@ -30,7 +30,7 @@ import java.io.PrintWriter;
  */
 @Configuration
 //启动security
-//@EnableWebSecurity
+@EnableWebSecurity
 public class MySecurityConfig extends WebSecurityConfigurerAdapter {
 
 
