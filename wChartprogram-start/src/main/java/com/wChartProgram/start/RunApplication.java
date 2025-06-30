@@ -13,6 +13,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.servlet.mvc.Controller;
 
 import java.net.InetAddress;
@@ -31,6 +32,7 @@ import java.net.UnknownHostException;
 @MapperScans(@MapperScan({"com.wChartProgram.**.mapper*"}))
 @EnableCaching
 @EnableConfigurationProperties
+@EnableScheduling
 public class RunApplication {
     public static void main(String[] args) throws UnknownHostException {
         ConfigurableApplicationContext applicationContext = SpringApplication.run(RunApplication.class,args);
