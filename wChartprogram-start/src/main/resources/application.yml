@@ -46,7 +46,7 @@ mybatis-plus:
 logging:
     level:
         root: INFO
-        org.springframework: DEBUG
+        org.springframework: INFO
 
 ## 白名单配置，springboot启动时会忽略，不进行身份认证和授权校验
 secure:

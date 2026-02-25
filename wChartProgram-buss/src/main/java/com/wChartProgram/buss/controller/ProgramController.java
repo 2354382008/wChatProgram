@@ -6,10 +6,7 @@ import com.wChartProgram.model.dto.WChartProgramDto;
 import com.wChartProgram.model.entity.LeaderRole;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,7 +19,7 @@ public class ProgramController {
     private LeaderRoleService leaderRoleService;
 
     @Autowired
-    private KafkaService KafkaService;
+    private KafkaService kafkaService;
 
     @PostMapping("/add")
     public List<LeaderRole> addinfo(@RequestBody WChartProgramDto wChartProgramDto){
@@ -39,7 +36,11 @@ public class ProgramController {
         //测试状态机
         //leaderRoleService.notice();
         //测试kafka
-        KafkaService.sendMessage(null,null);
+        try {
+            kafkaService.sendMessage("demo", "测试kafka发送消息");
+        } catch (Exception e) {
+            log.error("发送Kafka消息失败", e);
+        }
     }
 
 
