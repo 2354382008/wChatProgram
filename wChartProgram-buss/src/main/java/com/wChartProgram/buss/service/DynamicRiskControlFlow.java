@@ -77,11 +77,11 @@ public class DynamicRiskControlFlow {
         // 构建流程配置
         DynamicFlowConfig flowConfig = new DynamicFlowConfig()
                 // 授信准入
-           // .addSyncStep(creditAccess())
+            .addSyncStep(creditAccess())
                 // 授信规则校验
-          //  .addSyncStep(creditRuleValidation())
+            .addSyncStep(creditRuleValidation())
                 // 影像件初始化
-           // .addSyncStep(imageInitialization())
+            .addSyncStep(imageInitialization())
                 // 风控审核流程
             .addStep(riskControlProcess())
                 // 结果处理
