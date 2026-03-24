@@ -25,4 +25,9 @@ public class RedisComponetImpl implements RedisComponet {
     public void addRedisKey(String key, Object object) {
         redisTemplate.opsForValue().set(key, object);
     }
+
+    @Override
+    public void deleteRedisKey(String key) {
+        redisTemplate.delete(key);
+    }
 }

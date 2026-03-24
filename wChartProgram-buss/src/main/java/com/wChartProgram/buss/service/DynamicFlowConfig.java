@@ -2,10 +2,14 @@ package com.wChartProgram.buss.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture; /**
+import java.util.concurrent.CompletableFuture;
+
+/**
  * 流程配置类
+ * @author wangmq
  */
 public class DynamicFlowConfig {
+
     private List<DynamicAsyncStep> steps = new ArrayList<>();
     
     public DynamicFlowConfig addStep(DynamicAsyncStep step) {

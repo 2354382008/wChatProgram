@@ -1,8 +1,11 @@
 package com.wChartProgram.buss.service;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors; /**
+import java.util.concurrent.Executors;
+
+/**
  * 风控服务客户端（负责发起风控请求）
+ * @author wangmq
  */
 public class RiskControlClient {
 
@@ -27,7 +30,7 @@ public class RiskControlClient {
                 // 实际项目中这里会是真实的远程调用
 
                 // 远程服务处理完成后会调用我们提供的回调接口
-//                simulateRemoteRiskProcessing(flowId, type);
+                simulateRemoteRiskProcessing(flowId, type);
             } catch (Exception e) {
                 System.err.println(type.getDescription() + "调用失败: " + e.getMessage());
             }

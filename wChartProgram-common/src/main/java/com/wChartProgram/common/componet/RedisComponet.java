@@ -22,4 +22,10 @@ public interface RedisComponet {
      * @param object
      */
     void addRedisKey(String key,Object object);
+
+    /**
+     * 删除redis key
+     * @param key
+     */
+    void deleteRedisKey(String key);
 }

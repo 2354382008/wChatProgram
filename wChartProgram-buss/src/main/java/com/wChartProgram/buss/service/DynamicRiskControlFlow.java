@@ -2,6 +2,7 @@ package com.wChartProgram.buss.service;
 
 import org.springframework.stereotype.Service;
 
+import java.nio.channels.FileChannel;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -58,62 +59,31 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * 动态风控流程实现
+ * @author wangmq
  */
 @Service
 public class DynamicRiskControlFlow {
 
-    private static RiskProcessManager riskManager = new RiskProcessManager();
-    
-//    public void flowHandle() {
-//        // 创建上下文对象
-//        DynamicApprovalContext context = new DynamicApprovalContext();
-//        context.setApplyNo("APPLY_123456");
-//        context.setFlowId("FLOW_" + "202509241034");
-//
-//        // 示例2: 资金方风控 -> 京发风控（动态调整顺序）
-//        //查询结果
-//        context.setRiskControlOrder(Arrays.asList(RiskControlType.FUNDER, RiskControlType.JINGFA));
-//
-//        // 构建流程配置
-//        DynamicFlowConfig flowConfig = new DynamicFlowConfig()
-//                // 授信准入
-//            .addSyncStep(creditAccess())
-//                // 授信规则校验
-//            .addSyncStep(creditRuleValidation())
-//                // 影像件初始化
-//            .addSyncStep(imageInitialization())
-//                // 风控审核流程
-//            .addStep(riskControlProcess())
-//                // 结果处理
-//            .addSyncStep(approvalResultProcessing());
-//
-//        // 执行流程
-//        DynamicFlowExecutor executor = new DynamicFlowExecutor();
-//        CompletableFuture<Void> resultFuture = executor.execute(flowConfig, context);
-//
-//        // 等待流程完成
-//        try {
-//            resultFuture.get(60, TimeUnit.SECONDS); // 设置超时
-//        } catch (Exception e) {
-//            context.setApproved(false);
-//            context.setRejectReason("流程超时或异常: " + e.getMessage());
-//        }
-//
-//        // 输出结果
-//        System.out.println("\n流程执行完成:");
-//        System.out.println("流程ID: " + context.getFlowId());
-//        System.out.println("申请人ID: " + context.getApplyNo());
-//        System.out.println("最终结果: " + (context.isApproved() ? "通过" : "拒绝"));
-//        if (!context.isApproved()) {
-//            System.out.println("拒绝原因: " + context.getRejectReason());
-//        }
-//    }
+    private static final RiskProcessManager RISK_MANAGER = new RiskProcessManager();
 
     public void flowHandle() {
         // 创建上下文对象
         DynamicApprovalContext context = new DynamicApprovalContext();
         context.setApplyNo("APPLY_123456");
         context.setFlowId("FLOW_" + "202509241034");
+
+        /**
+         * @PostConstruct
+         * public void init() {
+         *     strategyMap = strategies.stream()
+         *         .collect(Collectors.toMap(
+         *             MarginCalculationStrategy::getSupportedRuleType,
+         *             Function.identity(),
+         *             (a, b) -> a  // 冲突时取第一个
+         *         ));
+         * }
+         */
+        //todo 实时查询风控模型
 
         // 示例2: 资金方风控 -> 京发风控（动态调整顺序）
         context.setRiskControlOrder(Arrays.asList(RiskControlType.FUNDER, RiskControlType.JINGFA));
@@ -124,7 +94,8 @@ public class DynamicRiskControlFlow {
                 .addSyncStep(creditRuleValidation())
                 .addSyncStep(imageInitialization())
                 .addStep(riskControlProcess())
-                .addSyncStep(createCustomerCreditLimit()) // 新增创建客户额度节点
+                // 新增创建客户额度节点
+                .addSyncStep(createCustomerCreditLimit())
                 .addSyncStep(approvalResultProcessing());
 
         // 执行流程
@@ -133,7 +104,8 @@ public class DynamicRiskControlFlow {
 
         // 等待流程完成
         try {
-            resultFuture.get(60, TimeUnit.SECONDS); // 设置超时
+            // 设置超时
+            resultFuture.get(60, TimeUnit.SECONDS);
         } catch (Exception e) {
             context.setApproved(false);
             context.setRejectReason("流程超时或异常: " + e.getMessage());
@@ -149,8 +121,11 @@ public class DynamicRiskControlFlow {
         }
     }
 
-    
-    // 1. 授信准入
+
+    /**
+     * 1. 授信准入
+     * @return
+     */
     private static DynamicSyncStep creditAccess() {
         return context -> {
             System.out.println("执行授信准入检查... flowId: " + context.getFlowId());
@@ -158,8 +133,11 @@ public class DynamicRiskControlFlow {
             System.out.println("授信准入通过");
         };
     }
-    
-    // 2. 授信规则校验
+
+    /**
+     * 2. 授信规则校验
+     * @return
+     */
     private static DynamicSyncStep creditRuleValidation() {
         return context -> {
             System.out.println("执行授信规则校验... flowId: " + context.getFlowId());
@@ -167,8 +145,11 @@ public class DynamicRiskControlFlow {
             System.out.println("授信规则校验通过");
         };
     }
-    
-    // 3. 影像件初始化
+
+    /**
+     * 3. 影像件初始化
+     * @return
+     */
     private static DynamicSyncStep imageInitialization() {
         return context -> {
             System.out.println("执行授信影像件初始化... flowId: " + context.getFlowId());
@@ -176,8 +157,11 @@ public class DynamicRiskControlFlow {
             System.out.println("授信影像件初始化完成");
         };
     }
-    
-    // 4. 风控审核流程（核心步骤）
+
+    /**
+     * 4. 风控审核流程（核心步骤）
+     * @return
+     */
     private static DynamicAsyncStep riskControlProcess() {
         return context -> {
             System.out.println("开始风控审核流程... flowId: " + context.getFlowId());
@@ -194,20 +178,27 @@ public class DynamicRiskControlFlow {
             }
             
             // 启动风控流程并等待完成
-            return riskManager.startRiskProcess(context);
+            return RISK_MANAGER.startRiskProcess(context);
         };
     }
 
-    // 6. 创建客户额度
+    /**
+     * 6. 创建客户额度
+     * @return
+     */
     private static DynamicSyncStep createCustomerCreditLimit() {
         return context -> {
             System.out.println("执行创建客户额度... flowId: " + context.getFlowId());
-            context.getData().put("customerCreditLimit", 50000); // 示例额度
+            // 示例额度
+            context.getData().put("customerCreditLimit", 50000);
             System.out.println("客户额度创建完成，额度: " + context.getData().get("customerCreditLimit"));
         };
     }
-    
-    // 5. 授信结果处理
+
+    /**
+     * 5. 授信结果处理
+     * @return
+     */
     private static DynamicSyncStep approvalResultProcessing() {
         return context -> {
             System.out.println("执行授信结果处理... flowId: " + context.getFlowId());

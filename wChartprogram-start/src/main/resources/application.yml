@@ -65,6 +65,7 @@ secure:
             - /actuator/**
             - /druid/**
             - /&zwnj;**/common/**&zwnj;
+            - /auth/**
 
 
 
