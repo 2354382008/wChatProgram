@@ -6,13 +6,20 @@ import org.springframework.util.CollectionUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.apache.logging.log4j.message.MapMessage.MapFormat.JSON;
+
 @Slf4j
 public class TeamMatch {
     public static void main(String[] args) {
 //        teamMatch();
 //        listSort1();
-        listSort2();
+//        listSort2();
 //        listSort3();
+//        bubbleSort();
+        int numbers[] = {2, 7, 11, 15};
+        int target = 13;
+//        findTwoSum(numbers,target);
+        count369(30);
     }
 
     /**
@@ -75,7 +82,64 @@ public class TeamMatch {
         System.out.println("总共需要进行"+totalMatches+"场比赛");
     }
 
-    private static void maopaoSort(){
-        //todo
+    public static void bubbleSort() {
+        int[] array = {23,45,65,1,0};
+        int n = array.length;
+        for (int i = 0; i < n - 1; i++) {
+            boolean swapped = false;
+            for (int j = 0; j < n - 1 - i; j++) {
+                if (array[j] > array[j + 1]) {
+                    int temp = array[j];
+                    array[j] = array[j + 1];
+                    array[j + 1] = temp;
+                    swapped = true;
+                }
+            }
+            //如果没有发生交换，则说明原数组已经有序，可以提前结束排序
+            if (!swapped) {
+                break;
+            }
+        }
+    }
+
+    public static int[] findTwoSum(int[] numbers, int target) {
+        Map<Integer, Integer> map = new HashMap<>();
+        // {2，3，6} 8
+        for (int i = 1; i < numbers.length; i++) {
+            int complement = target - numbers[i];
+            if (map.containsKey(complement)) {
+                int[] result = new int[]{map.get(complement), i};
+                // 按升序排列下标
+                Arrays.sort(result);
+                System.out.println("找到的两个数的下标为：" + Arrays.toString(result));
+                return result;
+            }
+            map.put(numbers[i], i);
+        }
+        // 如果没有找到，返回空数组
+        return new int[0];
+    }
+
+    /**
+     * 统计[1-n] 区间
+     * @param n
+     * @return
+     */
+    public static int count369(int n) {
+        int count = 0;
+        List<Integer> list = new ArrayList<>();
+        for (int i = 1; i <= n; i++) {
+            int num = i;
+            while (num > 0) {
+                int digit = num % 10;
+                if (digit == 3 || digit == 6 || digit == 9) {
+                    count++;
+                }
+                num /= 10;
+            }
+            list.add(i);
+        }
+        System.out.println(count);
+        return count;
     }
 }

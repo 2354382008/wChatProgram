@@ -9,6 +9,10 @@ import org.springframework.statemachine.config.builders.StateMachineStateConfigu
 import org.springframework.statemachine.config.builders.StateMachineTransitionConfigurer;
 import java.util.EnumSet;
 
+/**
+ * 状态机配置类
+ * @author wangmq
+ */
 @Configuration
 @EnableStateMachine
 public class StatusMachtueConfig extends EnumStateMachineConfigurerAdapter<StatusCode, HandlerCode> {
@@ -21,8 +25,10 @@ public class StatusMachtueConfig extends EnumStateMachineConfigurerAdapter<Statu
     @Override
     public void configure(StateMachineStateConfigurer<StatusCode, HandlerCode> states) throws Exception {
         states.withStates()
-                .initial(StatusCode.EXECUTE_STS_N) // 设置初始状态为"未执行"
-                .states(EnumSet.allOf(StatusCode.class)); // 注册所有任务状态枚举
+                // 设置初始状态为"未执行"
+                .initial(StatusCode.EXECUTE_STS_N)
+                // 注册所有任务状态枚举
+                .states(EnumSet.allOf(StatusCode.class));
     }
 
     /**
@@ -34,18 +40,27 @@ public class StatusMachtueConfig extends EnumStateMachineConfigurerAdapter<Statu
     public void configure(StateMachineTransitionConfigurer<StatusCode, HandlerCode> transitionConfigurer) throws Exception {
         // 定义支付事件触发的状态转换
         transitionConfigurer.withExternal()
-                .source(StatusCode.IS_NOTICE_N)  // 源状态：未通知
-                .target(StatusCode.IS_NOTICE_Y)  // 目标状态：已通知
-                .event(HandlerCode.NOTICE)  // 触发事件：通知
+                // 源状态：未通知
+                .source(StatusCode.IS_NOTICE_N)
+                // 目标状态：已通知
+                .target(StatusCode.IS_NOTICE_Y)
+                // 触发事件：通知
+                .event(HandlerCode.NOTICE)
                 .and()
                 .withExternal()
-                .source(StatusCode.EXECUTE_STS_N)  // 源状态：未执行
-                .target(StatusCode.EXECUTE_STS_O)  // 目标状态：已知晓未执行
-                .event(HandlerCode.EXECUT) //触发事件执行
+                // 源状态：未执行
+                .source(StatusCode.EXECUTE_STS_N)
+                // 目标状态：已知晓未执行
+                .target(StatusCode.EXECUTE_STS_O)
+                //触发事件执行
+                .event(HandlerCode.EXECUT)
                 .and()
                 .withExternal()
-                .source(StatusCode.EXECUTE_STS_O) //源状态：已知晓未执行
-                .target(StatusCode.EXECUTE_STS_Y) //目标状态：已执行
-                .event(HandlerCode.EXECUT);//触发事件：执行
+                //源状态：已知晓未执行
+                .source(StatusCode.EXECUTE_STS_O)
+                //目标状态：已执行
+                .target(StatusCode.EXECUTE_STS_Y)
+                //触发事件：执行
+                .event(HandlerCode.EXECUT);
     }
 }
