@@ -28,7 +28,7 @@ package com.wChartProgram.buss.service.impl;
         for (ListNode current = afterNode; current != null; current = current.next) {
             System.out.print(current.val + " ");
             if (current.next == null){
-                System.out.println("");
+                System.out.println(current.next);
             }
         }
     }

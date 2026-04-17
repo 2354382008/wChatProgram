@@ -2,11 +2,8 @@ package com.wChartProgram.buss.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
-
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static org.apache.logging.log4j.message.MapMessage.MapFormat.JSON;
 
 @Slf4j
 public class TeamMatch {
@@ -16,10 +13,11 @@ public class TeamMatch {
 //        listSort2();
 //        listSort3();
 //        bubbleSort();
-        int numbers[] = {2, 7, 11, 15};
-        int target = 13;
-//        findTwoSum(numbers,target);
-        count369(30);
+//        findTwoSum(new int[]{2, 7, 11, 15},13);
+//        count369(30);
+//        findPrimes();
+//        sortStack();
+        solution(10,4);
     }
 
     /**
@@ -82,6 +80,9 @@ public class TeamMatch {
         System.out.println("总共需要进行"+totalMatches+"场比赛");
     }
 
+    /**
+     * 冒泡排序
+     */
     public static void bubbleSort() {
         int[] array = {23,45,65,1,0};
         int n = array.length;
@@ -102,6 +103,12 @@ public class TeamMatch {
         }
     }
 
+    /**
+     * [2,3,5] 7 找到数组中两个数的下标，且和为7(目标值)
+     * @param numbers
+     * @param target
+     * @return
+     */
     public static int[] findTwoSum(int[] numbers, int target) {
         Map<Integer, Integer> map = new HashMap<>();
         // {2，3，6} 8
@@ -121,7 +128,7 @@ public class TeamMatch {
     }
 
     /**
-     * 统计[1-n] 区间
+     * 统计[1-n] 区间内 3，6，9出现的次数
      * @param n
      * @return
      */
@@ -141,5 +148,90 @@ public class TeamMatch {
         }
         System.out.println(count);
         return count;
+    }
+
+    /**
+     * 找出0-n 区间内的素数
+     * @return
+     */
+    public static List<Integer> findPrimes() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("输入一个整数，找出0-n区间内的所有素数");
+        int n = scanner.nextInt();
+        List<Integer> primes = new ArrayList<>();
+        if (n < 2) {
+            // 如果 n 小于 2，则没有素数
+            return new ArrayList<>();
+        }
+        boolean[] isPrime = new boolean[n + 1];
+        // 初始化所有数为素数
+        Arrays.fill(isPrime, true);
+        // 0 不是素数
+        isPrime[0] = false;
+        // 1 不是素数
+        isPrime[1] = false;
+        // 筛选非素数
+        for (int i = 2; i * i <= n; i++) {
+            if (isPrime[i]) {
+                for (int j = i * i; j <= n; j += i) {
+                    // 将 i 的倍数标记为非素数
+                    isPrime[j] = false;
+                }
+            }
+        }
+        // 收集所有素数
+        for (int i = 2; i <= n; i++) {
+            if (isPrime[i]) {
+                primes.add(i);
+            }
+        }
+        System.out.println("0到"+n+"区间的素数有："+primes);
+        return primes;
+    }
+
+    /**
+     * 栈排序：升序（栈顶最小）
+     */
+    public static void sortStack() {
+        Stack<Integer> stack = new Stack<>();
+        stack.push(1);
+        stack.push(4);
+        stack.push(2);
+        stack.push(0);
+        stack.push(8);
+        Stack<Integer> helpStack = new Stack<>();
+        while (!stack.isEmpty()) {
+            // 弹出原栈顶元素
+            int tmp = stack.pop();
+            // 辅助栈：栈不为空 且 栈顶 > tmp，弹回原栈
+            while (!helpStack.isEmpty() && helpStack.peek() < tmp) {
+                stack.push(helpStack.pop());
+            }
+            // 当前元素入辅助栈
+            helpStack.push(tmp);
+        }
+        // 辅助栈倒回原栈，完成排序
+        while (!helpStack.isEmpty()) {
+            stack.push(helpStack.pop());
+        }
+        System.out.println("排序后的栈元素:"+stack);
+    }
+
+    /**
+     * 0-[n-1]个人围成一个圈，计算firstNumber对面的人是几号
+     * @param n
+     * @param firstNumber
+     * @return
+     */
+    public static int solution(int n,int firstNumber){
+        if (n <= 0 || n % 2 != 0){
+            throw new IllegalArgumentException("n必须是正偶数!");
+        }
+        if (firstNumber < 0 || firstNumber >= n){
+            throw new IllegalArgumentException("编号【firstNumber】超出范围");
+        }
+        int result = (firstNumber + n/2) % n;
+        System.out.println("总共有"+n+"个人"+firstNumber+"号人对面的人是"+result+"号");
+        return result;
     }
 }
