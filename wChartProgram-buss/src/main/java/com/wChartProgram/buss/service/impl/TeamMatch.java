@@ -17,7 +17,7 @@ public class TeamMatch {
 //        count369(30);
 //        findPrimes();
 //        sortStack();
-        solution(10,4);
+//        solution(10,4);
     }
 
     /**

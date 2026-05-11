@@ -43,5 +43,9 @@ public class ProgramController {
         }
     }
 
+    @PostMapping("/constroctTest")
+    public void constroctTest(){
+        log.info("开始标记接口+策略模式的测试");
 
+    }
 }

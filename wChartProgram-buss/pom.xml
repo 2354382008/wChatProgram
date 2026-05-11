@@ -48,6 +48,13 @@
             <version>${version}</version>
         </dependency>
 
+        <!-- Jackson 核心包（JDK8 必备 JSON 工具） -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.15.2</version>
+        </dependency>
+
     </dependencies>
 
 </project>

@@ -11,7 +11,7 @@ import java.util.Hashtable;
 @Slf4j
 public class SchedulerTest {
 
-    @Scheduled(fixedRate = 5000)
+//    @Scheduled(fixedRate = 5000)
     public void schedulerTest(){
         log.info("进入定时任务");
     }
