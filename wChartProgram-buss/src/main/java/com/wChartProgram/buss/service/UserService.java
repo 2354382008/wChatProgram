@@ -3,12 +3,12 @@ package com.wChartProgram.buss.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.wChartProgram.model.dto.LoginRequest;
 import com.wChartProgram.model.dto.LoginResponse;
-import com.wChartProgram.model.entity.User;
+import com.wChartProgram.model.entity.UserInfo;
 
 /**
  * 用户服务接口
  */
-public interface UserService extends IService<User> {
+public interface UserService extends IService<UserInfo> {
 
     /**
      * 用户登录
@@ -28,5 +28,5 @@ public interface UserService extends IService<User> {
      * @param token 登录token
      * @return 用户信息
      */
-    User getUserByToken(String token);
+    UserInfo getUserByToken(String token);
 }

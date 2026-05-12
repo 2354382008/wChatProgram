@@ -18,6 +18,6 @@ public class WebConfig implements WebMvcConfigurer {
                 //指定拦截的路径
                 .addPathPatterns("/**")
                 //排除的路径
-                .excludePathPatterns("/testModule");
+                .excludePathPatterns("/api");
     }
 }

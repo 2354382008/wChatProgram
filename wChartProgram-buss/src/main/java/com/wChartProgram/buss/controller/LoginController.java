@@ -1,9 +1,12 @@
 package com.wChartProgram.buss.controller;
 
 import com.wChartProgram.buss.service.UserService;
+import com.wChartProgram.model.dto.CommonRequestDto;
+import com.wChartProgram.model.dto.CommonResponseDto;
 import com.wChartProgram.model.dto.LoginRequest;
 import com.wChartProgram.model.dto.LoginResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @Slf4j
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/wChat/auth")
 public class LoginController {
 
     @Autowired
@@ -24,12 +27,10 @@ public class LoginController {
      * @return 登录响应
      */
     @PostMapping("/login")
-    public LoginResponse login(@RequestBody LoginRequest loginRequest) {
+    public CommonResponseDto<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
         log.info("用户登录请求：username={}", loginRequest.getUsername());
         try {
-            LoginResponse response = userService.login(loginRequest);
-            log.info("用户登录成功：username={}", loginRequest.getUsername());
-            return response;
+            return CommonResponseDto.create().data(userService.login(loginRequest));
         } catch (Exception e) {
             log.error("用户登录失败：username={}, error={}", loginRequest.getUsername(), e.getMessage());
             throw new RuntimeException(e.getMessage());

@@ -15,6 +15,8 @@ public final class CommonResponseDto<T> {
     private Map<Object, Object> extData;
 
     private CommonResponseDto() {
+        this.code = DEFAULT_CODE;
+        this.message = "成功";
     }
 
     private CommonResponseDto(String code, long total, String message, Level level, T data) {

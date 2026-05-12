@@ -16,5 +16,6 @@ public class LoginPermionExecutorImpl extends LoginExecutor<CommonRequestDto> {
     @Override
     protected void executorPt(CommonRequestDto request) {
         //todo 登录权限校验
+        log.info("登录权限校验待办");
     }
 }

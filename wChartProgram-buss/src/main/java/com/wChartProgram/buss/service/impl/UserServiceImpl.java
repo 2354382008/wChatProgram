@@ -2,12 +2,12 @@ package com.wChartProgram.buss.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.wChartProgram.buss.mapper.UserMapper;
+import com.wChartProgram.buss.mapper.UserInfoMapper;
 import com.wChartProgram.buss.service.UserService;
 import com.wChartProgram.common.componet.RedisComponet;
 import com.wChartProgram.model.dto.LoginRequest;
 import com.wChartProgram.model.dto.LoginResponse;
-import com.wChartProgram.model.entity.User;
+import com.wChartProgram.model.entity.UserInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -23,13 +23,13 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @Service
-public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
+public class UserServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> implements UserService {
 
     private static final String TOKEN_PREFIX = "token:";
     private static final long TOKEN_EXPIRE_TIME = 24; // token过期时间：24小时
 
     @Autowired
-    private UserMapper userMapper;
+    private UserInfoMapper userInfoMapper;
 
     @Autowired
     private RedisComponet redisComponet;
@@ -40,17 +40,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public LoginResponse login(LoginRequest loginRequest) {
         // 1. 根据用户名查询用户
-        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(User::getUsername, loginRequest.getUsername());
-        User user = userMapper.selectOne(queryWrapper);
+        LambdaQueryWrapper<UserInfo> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(UserInfo::getUsername, loginRequest.getUsername());
+        UserInfo user = userInfoMapper.selectOne(queryWrapper);
 
         // 2. 验证用户是否存在
         if (user == null) {
-            throw new RuntimeException("用户名或密码错误");
+            throw new RuntimeException("用户名不存在");
+        }
+
+        if (!user.getPassword().equals(loginRequest.getPassword())){
+            throw new RuntimeException("用户密码错误!");
         }
 
         // 3. 验证用户状态
-        if (user.getStatus() == null || user.getStatus() != 1) {
+        if (user.getStatus() == null || user.getStatus() != 0) {
             throw new RuntimeException("用户已被禁用");
         }
 
@@ -88,7 +92,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public User getUserByToken(String token) {
+    public UserInfo getUserByToken(String token) {
         String tokenKey = TOKEN_PREFIX + token;
         String userId = redisComponet.getRedisValue(tokenKey).toString();
 
@@ -96,6 +100,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return null;
         }
 
-        return userMapper.selectById(Long.parseLong(userId));
+        return userInfoMapper.selectById(Long.parseLong(userId));
     }
 }

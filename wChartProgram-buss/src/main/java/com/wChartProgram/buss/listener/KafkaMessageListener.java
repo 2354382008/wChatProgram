@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class KafkaMessageListener {
 
-    @KafkaListener(topics = "demo",groupId = "test-consumer-group")
+//    @KafkaListener(topics = "demo",groupId = "test-consumer-group")
     public void kafkaListener(String message){
         log.info("监听到kafka消息为：{}",message);
     }

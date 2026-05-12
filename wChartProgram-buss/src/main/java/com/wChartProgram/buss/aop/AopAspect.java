@@ -49,10 +49,10 @@ public class AopAspect {
                 .resolveReference(RequestAttributes.REFERENCE_REQUEST);
         String url = request.getRequestURL().toString();
         //测试环境暂不拦截
-//        if (url.contains("query")){
-//            System.out.println("AOP拦截-query该路径不允许访问！");
-//            return null;
-//        }
+        if (url.contains("test")){
+            System.out.println("AOP拦截-query该路径不允许访问！");
+            return null;
+        }
         System.out.println("AOP-开始访问");
         Object proceed = proceedingJoinPoint.proceed();
         System.out.println("AOP-访问结束");
