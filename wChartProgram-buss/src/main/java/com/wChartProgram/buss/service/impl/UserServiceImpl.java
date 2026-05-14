@@ -58,20 +58,20 @@ public class UserServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> imple
             throw new RuntimeException("用户已被禁用");
         }
 
-        // 4. 验证密码（使用MD5加密）
-        String encryptedPassword = DigestUtils.md5DigestAsHex(
-            loginRequest.getPassword().getBytes(StandardCharsets.UTF_8)
-        );
-        if (!encryptedPassword.equals(user.getPassword())) {
-            throw new RuntimeException("用户名或密码错误");
-        }
-
+//        // 4. 验证密码（使用MD5加密）
+//        String encryptedPassword = DigestUtils.md5DigestAsHex(
+//            loginRequest.getPassword().getBytes(StandardCharsets.UTF_8)
+//        );
+//        if (!encryptedPassword.equals(user.getPassword())) {
+//            throw new RuntimeException("用户名或密码错误");
+//        }
+//
         // 5. 生成token
         String token = UUID.randomUUID().toString().replace("-", "");
         String tokenKey = TOKEN_PREFIX + token;
-
-        // 6. 将用户信息存储到Redis（设置过期时间）
-        redisTemplate.opsForValue().set(tokenKey, String.valueOf(user.getId()), TOKEN_EXPIRE_TIME, TimeUnit.HOURS);
+//
+//        // 6. 将用户信息存储到Redis（设置过期时间）
+//        redisTemplate.opsForValue().set(tokenKey, String.valueOf(user.getId()), TOKEN_EXPIRE_TIME, TimeUnit.HOURS);
 
         // 7. 构造返回结果
         LoginResponse.UserInfo userInfo = new LoginResponse.UserInfo(

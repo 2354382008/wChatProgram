@@ -1,4 +1,4 @@
-package com.wChartProgram.buss.interceptor;
+package com.wChartprogram.security.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -20,8 +20,9 @@ public class CustomerInterceptor implements HandlerInterceptor {
         String url = request.getRequestURL().toString();
         log.info("请求的url: {}", url);
         //测试环境暂不拦截
-//        if (url.contains("query")) {
-//            log.info("拦截器拦截-该路径不允许访问!");
+//        if (request.getSession().getAttribute("user") == null) {
+//            log.info("拦截器拦截-未登录不允许访问!");
+//            response.sendRedirect("/login");
 //            return false;
 //        }
         return HandlerInterceptor.super.preHandle(request, response, handler);

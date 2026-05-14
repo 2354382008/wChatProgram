@@ -27,6 +27,14 @@ public final class CommonResponseDto<T> {
         this.data = data;
     }
 
+    public static <T> CommonResponseDto<T> sucess(T data) {
+        CommonResponseDto<T> r = new CommonResponseDto<>();
+        r.setCode(DEFAULT_CODE);
+        r.setMessage("成功");
+        r.setData(data);
+        return r;
+    }
+
     public static <T> CommonResponseDto<T> successMessage(String message) {
         return new CommonResponseDto("000000", 0L, message, CommonResponseDto.Level.INFO, (Object)null);
     }
