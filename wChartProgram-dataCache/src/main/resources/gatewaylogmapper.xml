@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wChartProgram.dataCache.gwList.dao.GatewayLogMapper">
+
+    <resultMap id="GatewayLogMap" type="com.wChartProgram.dataCache.gwList.dto.GatewayLog">
+        <id column="id" property="id" javaType="java.lang.Long"/>
+        <result column="request_id" property="requestId"/>
+        <result column="timestamp" property="timestamp"/>
+        <result column="app_id" property="appId"/>
+        <result column="asset_id" property="assetId"/>
+        <result column="asset_type" property="assetType"/>
+        <result column="status" property="status"/>
+        <result column="success" property="success"/>
+        <result column="error_code" property="errorCode"/>
+        <result column="duration_ms" property="durationMs"/>
+        <result column="client_id" property="clientId"/>
+
+        <association property="usageDto" javaType="com.wChartProgram.dataCache.gwList.dto.UsageDto">
+            <result column="prompt_tokens" property="promptTokens"/>
+            <result column="completion_tokens" property="completionTokens"/>
+            <result column="total_tokens" property="totalTokens"/>
+            <result column="cache_hit_tokens" property="cacheHitTokens"/>
+            <result column="cache_miss_tokens" property="cacheMissTokens"/>
+            <result column="tokens_per_second" property="tokensPerSecond"/>
+            <result column="time_to_first_token_ms" property="timeToFirstTokenMs"/>
+            <result column="time_per_output_token_ms" property="timePerOutputTokenMs"/>
+        </association>
+    </resultMap>
+
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO gateway_log
+        (request_id, timestamp, app_id, asset_id, asset_type, status, success,
+        error_code, duration_ms, client_id, prompt_tokens, completion_tokens,
+        total_tokens, cache_hit_tokens, cache_miss_tokens, tokens_per_second,
+        time_to_first_token_ms, time_per_output_token_ms)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.requestId}, #{item.timestamp}, #{item.appId}, #{item.assetId},
+            #{item.assetType}, #{item.status}, #{item.success}, #{item.errorCode},
+            #{item.durationMs}, #{item.clientId}, #{item.usageDto.promptTokens},
+            #{item.usageDto.completionTokens}, #{item.usageDto.totalTokens},
+            #{item.usageDto.cacheHitTokens}, #{item.usageDto.cacheMissTokens},
+            #{item.usageDto.tokensPerSecond}, #{item.usageDto.timeToFirstTokenMs},
+            #{item.usageDto.timePerOutputTokenMs})
+        </foreach>
+    </insert>
+
+    <insert id="insert" parameterType="com.wChartProgram.dataCache.gwList.dto.GatewayLog">
+        INSERT INTO gateway_log
+        (request_id, timestamp, app_id, asset_id, asset_type, status, success,
+         error_code, duration_ms, client_id, prompt_tokens, completion_tokens,
+         total_tokens, cache_hit_tokens, cache_miss_tokens, tokens_per_second,
+         time_to_first_token_ms, time_per_output_token_ms)
+        VALUES
+        (#{requestId}, #{timestamp}, #{appId}, #{assetId}, #{assetType},
+         #{status}, #{success}, #{errorCode}, #{durationMs}, #{clientId},
+         #{usageDto.promptTokens}, #{usageDto.completionTokens}, #{usageDto.totalTokens},
+         #{usageDto.cacheHitTokens}, #{usageDto.cacheMissTokens}, #{usageDto.tokensPerSecond},
+         #{usageDto.timeToFirstTokenMs}, #{usageDto.timePerOutputTokenMs})
+    </insert>
+
+    <select id="getCallAnalysisTotal" resultType="java.util.HashMap">
+        SELECT
+            COUNT(*) AS total_calls,
+            SUM(CASE WHEN success = 1 THEN 1 ELSE 0 END) AS success_calls,
+            SUM(CASE WHEN success = 0 THEN 1 ELSE 0 END) AS fail_calls,
+            ROUND(SUM(CASE WHEN success = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 1) AS success_rate
+        FROM gateway_log
+        WHERE `date` BETWEEN #{startDate} AND #{endDate}
+    </select>
+
+    <select id="getCallAnalysisByClient" resultType="java.util.HashMap">
+        SELECT
+            client_id,
+            COUNT(*) AS total_calls,
+            SUM(CASE WHEN success = 1 THEN 1 ELSE 0 END) AS success_calls,
+            SUM(CASE WHEN success = 0 THEN 1 ELSE 0 END) AS fail_calls,
+            ROUND(SUM(CASE WHEN success = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 1) AS success_rate
+        FROM gateway_log
+        WHERE `date` BETWEEN #{startDate} AND #{endDate}
+          AND client_id IS NOT NULL
+          AND client_id != ''
+        GROUP BY client_id
+        ORDER BY total_calls DESC
+            LIMIT #{limit}
+    </select>
+
+    <select id="getCallAnalysisHourly" resultType="java.util.HashMap">
+        SELECT
+            DATE_FORMAT(timestamp, '%Y-%m-%d %H:00:00') AS hour_bucket,
+            COUNT(*) AS total_calls,
+            SUM(CASE WHEN success = 1 THEN 1 ELSE 0 END) AS success_calls,
+            ROUND(SUM(CASE WHEN success = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 1) AS success_rate
+        FROM gateway_log
+        WHERE `date` BETWEEN #{startDate} AND #{endDate}
+        GROUP BY DATE_FORMAT(timestamp, '%Y%m%d%H')
+        ORDER BY hour_bucket
+    </select>
+
+    <select id="getTokenStatsTotal" resultType="java.util.HashMap">
+        SELECT
+            ROUND(SUM(total_tokens) / 1000000, 1) AS total_tokens_m,
+            ROUND(SUM(prompt_tokens) / 1000000, 1) AS prompt_tokens_m,
+            ROUND(SUM(completion_tokens) / 1000000, 1) AS completion_tokens_m,
+            ROUND(SUM(cache_hit_tokens) * 100.0 / NULLIF(SUM(cache_hit_tokens + cache_miss_tokens), 0), 1) AS cache_hit_rate,
+            SUM(cache_hit_tokens) AS cache_hit_tokens,
+            SUM(cache_miss_tokens) AS cache_miss_tokens
+        FROM gateway_log
+        WHERE `date` BETWEEN #{startDate} AND #{endDate}
+          AND success = 1
+    </select>
+
+    <select id="getTokenStatsByApp" resultType="java.util.HashMap">
+        SELECT
+            app_id,
+            ROUND(SUM(total_tokens) / 1000000, 2) AS total_tokens_m,
+            ROUND(SUM(prompt_tokens) / 1000000, 2) AS prompt_tokens_m,
+            ROUND(SUM(completion_tokens) / 1000000, 2) AS completion_tokens_m,
+            ROUND(SUM(cache_hit_tokens) * 100.0 / NULLIF(SUM(cache_hit_tokens + cache_miss_tokens), 0), 1) AS cache_hit_rate,
+            COUNT(*) AS call_count
+        FROM gateway_log
+        WHERE `date` BETWEEN #{startDate} AND #{endDate}
+          AND success = 1
+        GROUP BY app_id
+        ORDER BY total_tokens_m DESC
+            LIMIT #{limit}
+    </select>
+
+    <select id="getTokenStatsDaily" resultType="java.util.HashMap">
+        SELECT
+            `date`,
+            ROUND(SUM(total_tokens) / 1000000, 2) AS total_tokens_m,
+            ROUND(SUM(prompt_tokens) / 1000000, 2) AS prompt_tokens_m,
+            ROUND(SUM(completion_tokens) / 1000000, 2) AS completion_tokens_m,
+            ROUND(SUM(cache_hit_tokens) * 100.0 / NULLIF(SUM(cache_hit_tokens + cache_miss_tokens), 0), 1) AS cache_hit_rate
+        FROM gateway_log
+        WHERE `date` BETWEEN #{startDate} AND #{endDate}
+          AND success = 1
+        GROUP BY `date`
+        ORDER BY `date`
+    </select>
+
+    <select id="getSecurityStatsTotal" resultType="java.util.HashMap">
+        SELECT
+            ROUND(SUM(CASE WHEN success = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 1) AS apikey_pass_rate,
+            COUNT(*) AS total_requests,
+            SUM(CASE WHEN success = 1 THEN 1 ELSE 0 END) AS success_requests,
+            SUM(CASE WHEN error_code IN ('missing_api_key', 'invalid_api_key') THEN 1 ELSE 0 END) AS apikey_auth_fail_count,
+            SUM(CASE WHEN error_code IN ('addr_forbidden', 'unsafe_output_blocked', 'asset_not_found',
+                                         'asset_unavailable', 'missing_secret_config', 'invalid_runtime_endpoint')
+                         THEN 1 ELSE 0 END) AS violation_call_count,
+            SUM(CASE WHEN error_code = 'rate_limit_exceeded' THEN 1 ELSE 0 END) AS rate_limit_count,
+            SUM(CASE WHEN error_code IN ('too_many_concurrent_requests', 'upstream_timeout', 'upstream_error', 'mcp_reroute_loop')
+                OR (error_code = 'upstream_error' AND duration_ms > 30000)
+                         THEN 1 ELSE 0 END) AS circuit_break_count,
+            SUM(CASE WHEN error_code IN ('rate_limit_exceeded', 'too_many_concurrent_requests', 'upstream_timeout', 'upstream_error', 'mcp_reroute_loop')
+                OR (error_code = 'upstream_error' AND duration_ms > 30000)
+                         THEN 1 ELSE 0 END) AS rate_limit_circuit_count
+        FROM gateway_log
+        WHERE `date` BETWEEN #{startDate} AND #{endDate}
+    </select>
+
+    <select id="getSecurityStatsHourly" resultType="java.util.HashMap">
+        SELECT
+            DATE_FORMAT(timestamp, '%Y-%m-%d %H:00:00') AS hour_bucket,
+            SUM(CASE WHEN error_code IN ('addr_forbidden', 'unsafe_output_blocked', 'asset_not_found',
+                                         'asset_unavailable', 'missing_secret_config', 'invalid_runtime_endpoint')
+                         THEN 1 ELSE 0 END) AS violation_count,
+            SUM(CASE WHEN error_code IN ('rate_limit_exceeded', 'too_many_concurrent_requests', 'upstream_timeout', 'upstream_error', 'mcp_reroute_loop')
+                OR (error_code = 'upstream_error' AND duration_ms > 30000)
+                         THEN 1 ELSE 0 END) AS circuit_limit_count,
+            SUM(CASE WHEN error_code IN ('missing_api_key', 'invalid_api_key') THEN 1 ELSE 0 END) AS apikey_fail_count
+        FROM gateway_log
+        WHERE `date` BETWEEN #{startDate} AND #{endDate}
+        GROUP BY DATE_FORMAT(timestamp, '%Y%m%d%H')
+        ORDER BY hour_bucket
+    </select>
+
+    <select id="getApiKeyPassRecords" resultType="java.util.HashMap">
+        SELECT
+        app_id,
+        client_id AS call_ip,
+        timestamp AS call_time,
+        request_id,
+        'APIKey鉴权通过' AS record_type
+        FROM gateway_log
+        WHERE `date` BETWEEN #{startDate} AND #{endDate}
+        AND success = 1
+        <if test="appId != null and appId != ''">
+            AND app_id = #{appId}
+        </if>
+        ORDER BY timestamp DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countApiKeyPassRecords" resultType="long">
+        SELECT COUNT(*)
+        FROM gateway_log
+        WHERE `date` BETWEEN #{startDate} AND #{endDate}
+        AND success = 1
+        <if test="appId != null and appId != ''">
+            AND app_id = #{appId}
+        </if>
+    </select>
+
+    <select id="getViolationRecords" resultType="java.util.HashMap">
+        SELECT
+            app_id,
+            error_code AS violation_type,
+            timestamp AS call_time,
+            client_id AS call_ip,
+            CONCAT('错误码:', error_code, ', HTTP:', status, ', 耗时:', duration_ms, 'ms') AS detail,
+            request_id
+        FROM gateway_log
+        WHERE `date` BETWEEN #{startDate} AND #{endDate}
+          AND success = 0
+          AND error_code IN ('addr_forbidden', 'unsafe_output_blocked', 'asset_not_found',
+            'asset_unavailable', 'missing_secret_config', 'invalid_runtime_endpoint')
+        ORDER BY timestamp DESC
+            LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countViolationRecords" resultType="long">
+        SELECT COUNT(*)
+        FROM gateway_log
+        WHERE `date` BETWEEN #{startDate} AND #{endDate}
+          AND success = 0
+          AND error_code IN ('addr_forbidden', 'unsafe_output_blocked', 'asset_not_found',
+                             'asset_unavailable', 'missing_secret_config', 'invalid_runtime_endpoint')
+    </select>
+
+    <select id="getLimitCircuitRecords" resultType="java.util.HashMap">
+        SELECT
+            app_id,
+            CASE
+                WHEN error_code = 'rate_limit_exceeded' THEN '限流'
+                WHEN error_code = 'too_many_concurrent_requests' THEN '熔断(并发超限)'
+                WHEN error_code = 'upstream_timeout' THEN '熔断(上游超时)'
+                WHEN error_code = 'upstream_error' AND duration_ms > 30000 THEN '熔断(上游错误+超时)'
+                WHEN error_code = 'upstream_error' THEN '上游错误'
+                WHEN error_code = 'mcp_reroute_loop' THEN '熔断(MCP路由循环)'
+                ELSE '限流/熔断'
+                END AS type,
+            timestamp AS call_time,
+            client_id AS call_ip,
+            CONCAT(ROUND(duration_ms / 1000, 1), '秒') AS remark,
+            error_code,
+            request_id
+        FROM gateway_log
+        WHERE `date` BETWEEN #{startDate} AND #{endDate}
+          AND success = 0
+          AND (
+            error_code IN ('rate_limit_exceeded', 'too_many_concurrent_requests', 'upstream_timeout', 'upstream_error', 'mcp_reroute_loop')
+           OR (error_code = 'upstream_error' AND duration_ms > 30000)
+            )
+        ORDER BY timestamp DESC
+            LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countLimitCircuitRecords" resultType="long">
+        SELECT COUNT(*)
+        FROM gateway_log
+        WHERE `date` BETWEEN #{startDate} AND #{endDate}
+          AND success = 0
+          AND (
+                    error_code IN ('rate_limit_exceeded', 'too_many_concurrent_requests', 'upstream_timeout', 'upstream_error', 'mcp_reroute_loop')
+                OR (error_code = 'upstream_error' AND duration_ms > 30000)
+            )
+    </select>
+
+    <select id="getRealtimeMonitor" resultType="java.util.HashMap">
+        SELECT
+            DATE_FORMAT(timestamp, '%Y-%m-%d %H:%i:00') AS minute_bucket,
+            COUNT(*) AS calls_per_minute,
+            ROUND(AVG(duration_ms), 0) AS avg_duration_ms,
+            SUM(CASE WHEN success = 0 THEN 1 ELSE 0 END) AS fail_count
+        FROM gateway_log
+        WHERE timestamp >= DATE_SUB(NOW(), INTERVAL 1 HOUR)
+        GROUP BY DATE_FORMAT(timestamp, '%Y%m%d%H%i')
+        ORDER BY minute_bucket
+    </select>
+
+    <select id="getAppRanking" resultType="java.util.HashMap">
+        SELECT
+            app_id,
+            COUNT(*) AS total_calls,
+            ROUND(SUM(CASE WHEN success = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 1) AS success_rate,
+            ROUND(SUM(total_tokens) / 1000000, 2) AS total_tokens_m
+        FROM gateway_log
+        WHERE `date` >= DATE_SUB(CURDATE(), INTERVAL #{days} DAY)
+        GROUP BY app_id
+        ORDER BY total_calls DESC
+            LIMIT #{limit}
+    </select>
+
+</mapper>

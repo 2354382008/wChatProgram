@@ -72,6 +72,7 @@ secure:
 wchat:
     login:
         rsa-public-key-location: classpath:rsa_public.pem
+        rsa-private-key-location: classpath:rsa_private.pem
 
 
 

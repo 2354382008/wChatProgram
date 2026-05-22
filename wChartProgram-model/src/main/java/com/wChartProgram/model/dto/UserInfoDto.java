@@ -8,23 +8,48 @@ import lombok.Data;
 @Data
 public class UserInfoDto extends CommonRequestDto{
 
-    private String userId;
+    /**
+     * 用户名
+     */
+    private String username;
 
-    private String userName;
+    /**
+     * 密码
+     */
+    private String confirmPassword;
 
-    private String userOrg;
+    /**
+     * 真实姓名
+     */
+    private String realName;
 
+    /**
+     * 手机号
+     */
+    private String phone;
+
+    /**
+     * 邮箱
+     */
+    private String email;
+
+    /**
+     * 状态(0:禁用;1:启用)
+     */
+    private Integer status;
+
+    /**
+     * 用户id
+     */
+    private String id;
+
+    /**
+     * 用户角色
+     */
     private String userRole;
 
-    private String userStatus;
-
-    private String userEmail;
-
-    private String userPhone;
-
-    private String userAddress;
-
-    private String userPassword;
-
-    private String userParentId;
+    /**
+     * 用户头像
+     */
+    private String avatar;
 }

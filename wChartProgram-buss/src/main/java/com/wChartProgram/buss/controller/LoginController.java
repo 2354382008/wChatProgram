@@ -2,24 +2,28 @@ package com.wChartProgram.buss.controller;
 
 import com.wChartProgram.buss.service.UserService;
 import com.wChartProgram.common.util.PrivateKeyUtil;
-import com.wChartProgram.common.util.RsaLoginPasswordDecryptor;
 import com.wChartProgram.model.dto.*;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.util.Base64;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+import org.apache.commons.codec.binary.Base64;
+import org.springframework.web.bind.annotation.PostMapping;
+
+import java.io.ByteArrayOutputStream;
+import java.nio.file.FileSystems;
+import java.util.UUID;
 
 /**
  * 登录控制器
@@ -34,6 +38,9 @@ public class LoginController {
     @Value("${wchat.login.rsa-public-key-location:classpath:rsa_public.pem}")
     private Resource publicKeyFile;
 
+    @Value("${wchat.login.rsa-private-key-location:classpath:rsa_private.pem}")
+    private Resource privateKeyFile;
+
     @Autowired
     private UserService userService;
 
@@ -42,17 +49,11 @@ public class LoginController {
      */
     @GetMapping("/publicKey")
     public CommonResponseDto<LoginPublicKeyData> publicKey() throws IOException {
-        String publicKeyLocation = "-----BEGIN PUBLIC KEY-----\n" +
-                "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjjhsdUIEJNjhbLHVHBJ8bbvYKyFjjhv0Ze7uGl7n9s1Xo5mLh3u2q8Zt6v0aQG8j5kH+9n7sPz5e4Xy7u2b\n" +
-                "-----END PUBLIC KEY-----";
-        if (publicKeyFile == null && publicKeyFile.exists()) {
+        if (publicKeyFile == null && !publicKeyFile.exists()) {
             return CommonResponseDto.error("500001", "登录公钥未配置");
         }
-//        String pem = StreamUtils.copyToString(publicKeyFile.getInputStream(), StandardCharsets.UTF_8)
-//                .replace("\\r\\n", "\n")
-//                .replace("\r\n", "\n")
-//                .trim();
-        String pem = publicKeyLocation.replace("\\r\\n", "\n")
+        String pem = StreamUtils.copyToString(publicKeyFile.getInputStream(), StandardCharsets.UTF_8)
+                .replace("\\r\\n", "\n")
                 .replace("\r\n", "\n")
                 .trim();
         if (!StringUtils.hasText(pem) || !pem.contains(BEGIN_PUBLIC_KEY)) {
@@ -111,7 +112,43 @@ public class LoginController {
      * @return 操作结果
      */
     @PostMapping("/testPublicKey")
-    public String getPublicKey(@RequestParam String privateKey) throws Exception{
-        return PrivateKeyUtil.getPublicKeyPemFromPrivateKeyPem(privateKey);
+    public CommonResponseDto<String> getPublicKey() throws Exception{
+        if (privateKeyFile == null && !privateKeyFile.exists()) {
+            return CommonResponseDto.error("500001", "登录公钥未配置");
+        }
+        String pem = StreamUtils.copyToString(privateKeyFile.getInputStream(), StandardCharsets.UTF_8)
+                .replace("\\r\\n", "\n")
+                .replace("\r\n", "\n")
+                .trim();
+        return CommonResponseDto.sucess(PrivateKeyUtil.getPublicKeyPemFromPrivateKeyPem(pem));
+    }
+
+    /**
+     * 注册用户
+     * @return 返回结果
+     */
+    @PostMapping("/register")
+    public CommonResponseDto<Integer> register(@RequestBody UserInfoDto userInfoDto) throws Exception{
+        return CommonResponseDto.sucess(userService.register(userInfoDto));
+    }
+
+
+
+    /**
+     * 校验账号是否已存在
+     * @return 操作结果
+     */
+    @PostMapping("{module}/checkInterface")
+    public CommonResponseDto<Boolean> checkInterface(@RequestBody UserInfoDto userInfoDto) throws Exception{
+        return CommonResponseDto.sucess(userService.checkInterface(userInfoDto));
+    }
+
+    /**
+     * 生成邀请码
+     * @return 返回结果
+     */
+    @PostMapping("/generateInviteCode")
+    public CommonResponseDto<String> generateInviteCode() throws Exception {
+        return CommonResponseDto.sucess(userService.generateInviteCode());
     }
 }

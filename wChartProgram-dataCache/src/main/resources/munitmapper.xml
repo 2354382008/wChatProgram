@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wChartProgram.dataCache.gwList.dao.MinuteAggMapper">
+
+    <insert id="batchUpsert" parameterType="java.util.List">
+        INSERT INTO gateway_log_hourly_agg
+        (hour_bucket, app_id, client_id, total_calls, success_calls, fail_calls,
+        total_tokens, prompt_tokens, completion_tokens, cache_hit_tokens, cache_miss_tokens,
+        apikey_auth_fail_count, violation_call_count, rate_limit_count, circuit_break_count)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.hourBucket}, #{item.appId}, #{item.clientId}, #{item.totalCalls},
+            #{item.successCalls}, #{item.failCalls}, #{item.totalTokens}, #{item.promptTokens},
+            #{item.completionTokens}, #{item.cacheHitTokens}, #{item.cacheMissTokens},
+            #{item.apikeyAuthFailCount}, #{item.violationCallCount},
+            #{item.rateLimitCount}, #{item.circuitBreakCount})
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        total_calls = VALUES(total_calls),
+        success_calls = VALUES(success_calls),
+        fail_calls = VALUES(fail_calls),
+        total_tokens = VALUES(total_tokens),
+        prompt_tokens = VALUES(prompt_tokens),
+        completion_tokens = VALUES(completion_tokens),
+        cache_hit_tokens = VALUES(cache_hit_tokens),
+        cache_miss_tokens = VALUES(cache_miss_tokens),
+        apikey_auth_fail_count = VALUES(apikey_auth_fail_count),
+        violation_call_count = VALUES(violation_call_count),
+        rate_limit_count = VALUES(rate_limit_count),
+        circuit_break_count = VALUES(circuit_break_count),
+        updated_at = NOW()
+    </insert>
+
+    <select id="selectRecentHours" resultType="com.wChartProgram.dataCache.gwList.dto.MinuteAggDto">
+        SELECT
+            hour_bucket as hourBucket,
+            app_id as appId,
+            client_id as clientId,
+            total_calls as totalCalls,
+            success_calls as successCalls,
+            fail_calls as failCalls,
+            total_tokens as totalTokens,
+            prompt_tokens as promptTokens,
+            completion_tokens as completionTokens,
+            cache_hit_tokens as cacheHitTokens,
+            cache_miss_tokens as cacheMissTokens,
+            apikey_auth_fail_count as apikeyAuthFailCount,
+            violation_call_count as violationCallCount,
+            rate_limit_count as rateLimitCount,
+            circuit_break_count as circuitBreakCount
+        FROM gateway_log_hourly_agg
+        WHERE hour_bucket >= DATE_SUB(NOW(), INTERVAL #{hours} HOUR)
+    </select>
+
+    <select id="selectByTimeRange" resultType="com.wChartProgram.dataCache.gwList.dto.MinuteAggDto">
+        SELECT
+            hour_bucket as hourBucket,
+            app_id as appId,
+            client_id as clientId,
+            total_calls as totalCalls,
+            success_calls as successCalls,
+            fail_calls as failCalls,
+            total_tokens as totalTokens,
+            prompt_tokens as promptTokens,
+            completion_tokens as completionTokens,
+            cache_hit_tokens as cacheHitTokens,
+            cache_miss_tokens as cacheMissTokens,
+            apikey_auth_fail_count as apikeyAuthFailCount,
+            violation_call_count as violationCallCount,
+            rate_limit_count as rateLimitCount,
+            circuit_break_count as circuitBreakCount
+        FROM gateway_log_hourly_agg
+        WHERE hour_bucket BETWEEN #{startHour} AND #{endHour}
+          AND app_id = ''
+          AND client_id = ''
+    </select>
+
+    <select id="getCallAnalysisFromAgg" resultType="java.util.HashMap">
+        SELECT
+            SUM(total_calls) AS total_calls,
+            SUM(success_calls) AS success_calls,
+            SUM(fail_calls) AS fail_calls,
+            ROUND(SUM(success_calls) * 100.0 / SUM(total_calls), 1) AS success_rate
+        FROM gateway_log_hourly_agg
+        WHERE hour_bucket BETWEEN #{startHour} AND #{endHour}
+          AND app_id = ''
+          AND client_id = ''
+    </select>
+
+    <select id="getTokenStatsFromAgg" resultType="java.util.HashMap">
+        SELECT
+            ROUND(SUM(total_tokens) / 1000000, 1) AS total_tokens_m,
+            ROUND(SUM(prompt_tokens) / 1000000, 1) AS prompt_tokens_m,
+            ROUND(SUM(completion_tokens) / 1000000, 1) AS completion_tokens_m,
+            ROUND(SUM(cache_hit_tokens) * 100.0 / NULLIF(SUM(cache_hit_tokens + cache_miss_tokens), 0), 1) AS cache_hit_rate
+        FROM gateway_log_hourly_agg
+        WHERE hour_bucket BETWEEN #{startHour} AND #{endHour}
+          AND app_id = ''
+          AND client_id = ''
+    </select>
+
+    <select id="getSecurityStatsFromAgg" resultType="java.util.HashMap">
+        SELECT
+            ROUND(SUM(success_calls) * 100.0 / SUM(total_calls), 1) AS apikey_pass_rate,
+            SUM(total_calls) AS total_requests,
+            SUM(success_calls) AS success_requests,
+            SUM(apikey_auth_fail_count) AS apikey_auth_fail_count,
+            SUM(violation_call_count) AS violation_call_count,
+            SUM(rate_limit_count) AS rate_limit_count,
+            SUM(circuit_break_count) AS circuit_break_count,
+            SUM(rate_limit_count + circuit_break_count) AS rate_limit_circuit_count
+        FROM gateway_log_hourly_agg
+        WHERE hour_bucket BETWEEN #{startHour} AND #{endHour}
+          AND app_id = ''
+          AND client_id = ''
+    </select>
+
+</mapper>

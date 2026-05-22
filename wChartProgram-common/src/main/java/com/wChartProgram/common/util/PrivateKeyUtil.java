@@ -17,6 +17,10 @@ import java.security.spec.RSAPublicKeySpec;
  */
 public class PrivateKeyUtil {
 
+    private static final String PRIVATE_KEY_BEGIN = "-----BEGIN PRIVATE KEY-----";
+
+    private static final String PRIVATE_KEY_END = "-----END PRIVATE KEY-----";
+
     public static KeyPair generateKeyPair() throws Exception {
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
         // 密钥长度：2048、3072、4096
@@ -73,11 +77,22 @@ public class PrivateKeyUtil {
     /**
      * PEM → 私钥对象
      */
-    private static PrivateKey pemToPrivateKey(String pem) throws Exception {
+    public static PrivateKey pemToPrivateKey(String pem) throws Exception {
+        // 确保 PEM 格式正确
+        if (!pem.contains(PRIVATE_KEY_BEGIN) || !pem.contains(PRIVATE_KEY_END)) {
+            throw new IllegalArgumentException("Invalid PEM format: Missing BEGIN/END markers");
+        }
+
+        // 去除头尾标识和多余空格
         String base64 = pem.replace("-----BEGIN PRIVATE KEY-----", "")
                 .replace("-----END PRIVATE KEY-----", "")
-                .replaceAll("\\s", "");
+                // 去除所有空格和换行符
+                .replaceAll("\\s+", "");
+
+        // 解码 Base64 内容
         byte[] der = Base64.getDecoder().decode(base64);
+
+        // 生成私钥对象
         PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(der);
         KeyFactory kf = KeyFactory.getInstance("RSA");
         return kf.generatePrivate(spec);

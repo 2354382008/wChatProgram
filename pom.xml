@@ -15,6 +15,7 @@
         <module>wChartprogram-start</module>
         <module>wChartProgram-common</module>
         <module>wChartProgram-security</module>
+        <module>wChartProgram-dataCache</module>
     </modules>
 
     <parent>

@@ -1,8 +1,10 @@
 package com.wChartProgram.buss.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.wChartProgram.model.dto.CommonResponseDto;
 import com.wChartProgram.model.dto.LoginRequest;
 import com.wChartProgram.model.dto.LoginResponse;
+import com.wChartProgram.model.dto.UserInfoDto;
 import com.wChartProgram.model.entity.UserInfo;
 
 /**
@@ -29,4 +31,10 @@ public interface UserService extends IService<UserInfo> {
      * @return 用户信息
      */
     UserInfo getUserByToken(String token);
+
+    int register(UserInfoDto userInfoDto);
+
+    Boolean checkInterface(UserInfoDto userInfoDto);
+
+    String generateInviteCode();
 }

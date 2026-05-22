@@ -11,4 +11,6 @@ public class LoginPublicKeyData {
 
   /** PEM，SPKI：-----BEGIN PUBLIC KEY----- */
   private String publicKeyPem;
+
+  private String privateKeyPem;
 }
